@@ -56,6 +56,24 @@ const ParentNoticeBoard: React.FC = () => {
           ];
         }
 
+        // Check for Kindergarten wing announcements from localStorage
+        try {
+          const kgSaved = localStorage.getItem('school_erp_kg_announcements');
+          if (kgSaved) {
+            const kgNotices = JSON.parse(kgSaved);
+            if (Array.isArray(kgNotices) && kgNotices.length > 0) {
+              const formattedKg = kgNotices.map((k: any) => ({
+                _id: k.id || `kg-${Math.random()}`,
+                title: `🧸 [Early Years] ${k.title}`,
+                content: `${k.content || k.description || ''} (Target: ${k.targetGrade || 'Kindergarten'} • Posted by: ${k.author || 'Mrs. Devaki Raman'})`,
+                type: k.priority === 'URGENT' ? 'URGENT' : (k.category || 'EVENT'),
+                createdAt: k.createdAt || new Date().toISOString(),
+              }));
+              fetchedData = [...formattedKg, ...fetchedData];
+            }
+          }
+        } catch {}
+
         setAnnouncements(fetchedData);
       } catch (err) {
         console.error(err);
@@ -66,6 +84,14 @@ const ParentNoticeBoard: React.FC = () => {
     };
 
     fetchAnnouncements();
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'school_erp_kg_announcements') {
+        fetchAnnouncements();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const getTypeColor = (type: string) => {

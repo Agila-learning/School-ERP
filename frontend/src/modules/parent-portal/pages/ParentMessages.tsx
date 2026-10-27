@@ -36,6 +36,17 @@ interface ChatMessage {
 
 const ASSIGNED_TEACHERS: TeacherContact[] = [
   {
+    id: 'tch-kg-01',
+    name: 'Mrs. Devaki Raman',
+    subject: 'Early Childhood & Pre-Primary',
+    role: 'Lead Kindergarten Educator (Butterflies UKG)',
+    isClassTeacher: true,
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80',
+    status: 'Online',
+    email: 'kg.staff@ficschool.edu',
+    phone: '+91 94440 12345'
+  },
+  {
     id: 'tch-01',
     name: 'Mrs. Radhika Iyer',
     subject: 'Mathematics & Algebra',
@@ -99,6 +110,32 @@ const ASSIGNED_TEACHERS: TeacherContact[] = [
 ];
 
 const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
+  'tch-kg-01': [
+    {
+      id: 'm-kg-1',
+      teacherId: 'tch-kg-01',
+      sender: 'teacher',
+      senderName: 'Mrs. Devaki Raman',
+      text: 'Good afternoon Rajesh ji! Aarav had an amazing day in Butterflies (UKG A). He finished his warm lunch and happily helped sort colored blocks.',
+      timestamp: 'Today, 11:30 AM'
+    },
+    {
+      id: 'm-kg-2',
+      teacherId: 'tch-kg-01',
+      sender: 'parent',
+      senderName: 'Rajesh Sharma (Parent)',
+      text: 'Thank you Mrs. Devaki! Did he drink sufficient water during outdoor playtime?',
+      timestamp: 'Today, 11:45 AM'
+    },
+    {
+      id: 'm-kg-3',
+      teacherId: 'tch-kg-01',
+      sender: 'teacher',
+      senderName: 'Mrs. Devaki Raman',
+      text: 'Yes! He finished his full water bottle and took a peaceful 75-minute nap on his cot.',
+      timestamp: 'Today, 01:15 PM'
+    }
+  ],
   'tch-01': [
     {
       id: 'm1',
@@ -140,11 +177,52 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
 export default function ParentMessages() {
   const { user } = useAuth();
   const { selectedChild } = useParentContext();
-  const [selectedTeacherId, setSelectedTeacherId] = useState<string>('tch-01');
-  const [allMessages, setAllMessages] = useState<Record<string, ChatMessage[]>>(INITIAL_MESSAGES);
+
+  const isKgChild = selectedChild?.class?.toLowerCase().includes('kg') || 
+                    user?.email?.toLowerCase().includes('kg.parent') ||
+                    selectedChild?.firstName?.toLowerCase().includes('aarav');
+
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string>(() => isKgChild ? 'tch-kg-01' : 'tch-01');
+  
+  const [allMessages, setAllMessages] = useState<Record<string, ChatMessage[]>>(() => {
+    try {
+      const saved = localStorage.getItem('school_erp_kg_parent_chat');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return { ...INITIAL_MESSAGES, ...parsed };
+      }
+    } catch {}
+    return INITIAL_MESSAGES;
+  });
+
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Sync to localStorage
+  const updateMessages = (updater: (prev: Record<string, ChatMessage[]>) => Record<string, ChatMessage[]>) => {
+    setAllMessages(prev => {
+      const updated = updater(prev);
+      try {
+        localStorage.setItem('school_erp_kg_parent_chat', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
+
+  // Sync cross-tab when teacher sends message
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'school_erp_kg_parent_chat' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          setAllMessages(prev => ({ ...prev, ...parsed }));
+        } catch {}
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const activeTeacher = ASSIGNED_TEACHERS.find(t => t.id === selectedTeacherId) || ASSIGNED_TEACHERS[0];
   const activeChatMessages = allMessages[selectedTeacherId] || [];
@@ -167,12 +245,12 @@ export default function ParentMessages() {
       id: `PMSG-${Date.now()}`,
       teacherId: selectedTeacherId,
       sender: 'parent',
-      senderName: user?.firstName ? `${user.firstName} (Parent)` : 'Avi (Parent)',
+      senderName: user?.firstName ? `${user.firstName} (Parent)` : (isKgChild ? 'Rajesh Sharma (Parent)' : 'Avi (Parent)'),
       text: newMsgText,
       timestamp: 'Just now'
     };
 
-    setAllMessages(prev => ({
+    updateMessages(prev => ({
       ...prev,
       [selectedTeacherId]: [...(prev[selectedTeacherId] || []), newParentMsg]
     }));
@@ -181,13 +259,20 @@ export default function ParentMessages() {
     setIsTyping(true);
     setTimeout(() => {
       setIsTyping(false);
-      const teacherReplies = [
-        `Thank you for reaching out, Avi! I have noted your message regarding ${selectedChild?.firstName || 'Advik'}. I will discuss this with him in class tomorrow.`,
-        `Received! ${selectedChild?.firstName || 'Advik'} has been attentive and diligent in his coursework. Let me know if you need any additional academic material.`,
-        `Thank you for checking in! Everything is on schedule for upcoming evaluations. Please feel free to reach out anytime during my office hours.`,
+      const kgReplies = [
+        `Thank you for checking in, Rajesh ji! Aarav is having a fantastic, happy day with his friends.`,
+        `Received! Aarav has been smiling and very enthusiastic in circle time today.`,
+        `Thank you for letting me know! We will ensure he drinks his water and has a peaceful rest.`,
+        `Noted! Aarav completed his drawing and ate all his healthy snacks today.`
+      ];
+      const generalReplies = [
+        `Thank you for reaching out! I have noted your message regarding ${selectedChild?.firstName || 'Advik'}. I will discuss this in class tomorrow.`,
+        `Received! ${selectedChild?.firstName || 'Advik'} has been attentive and diligent in coursework.`,
+        `Thank you for checking in! Everything is on schedule for upcoming evaluations.`,
         `Noted! I appreciate your active involvement in ${selectedChild?.firstName || 'Advik'}'s learning journey.`
       ];
-      const randomReply = teacherReplies[Math.floor(Math.random() * teacherReplies.length)];
+      const repliesPool = selectedTeacherId === 'tch-kg-01' ? kgReplies : generalReplies;
+      const randomReply = repliesPool[Math.floor(Math.random() * repliesPool.length)];
 
       const teacherMsg: ChatMessage = {
         id: `TMSG-${Date.now()}`,
@@ -198,7 +283,7 @@ export default function ParentMessages() {
         timestamp: 'Just now'
       };
 
-      setAllMessages(prev => ({
+      updateMessages(prev => ({
         ...prev,
         [selectedTeacherId]: [...(prev[selectedTeacherId] || []), teacherMsg]
       }));

@@ -257,10 +257,15 @@ const sportsMenuItems: MenuItemProps[] = [
 ];
 
 const kindergartenMenuItems: MenuItemProps[] = [
-  { title: 'Dashboard', path: '/kindergarten/dashboard', icon: <DashboardIcon /> },
-  { title: 'Students', path: '/kindergarten/students', icon: <PeopleIcon /> },
-  { title: 'Activities', path: '/kindergarten/activities', icon: <DashboardCustomizeIcon /> },
-  { title: 'Health & Safety', path: '/kindergarten/health', icon: <MonitorHeartIcon /> },
+  { title: 'Early Years Command Desk', path: '/kindergarten/dashboard', icon: <ChildCareIcon /> },
+  { title: 'Toddler Daily Attendance', path: '/kindergarten/dashboard?tab=attendance', icon: <EventAvailableIcon /> },
+  { title: 'Parent-Teacher Chat', path: '/kindergarten/dashboard?tab=chat', icon: <ChatBubbleOutlinedIcon /> },
+  { title: 'Announcements & Circulars', path: '/kindergarten/dashboard?tab=announcements', icon: <CampaignIcon /> },
+  { title: 'Meals, Naps & Daily Routine', path: '/kindergarten/dashboard?tab=meals', icon: <DashboardCustomizeIcon /> },
+  { title: 'Sensory & Milestones', path: '/kindergarten/dashboard?tab=milestones', icon: <EmojiEventsIcon /> },
+  { title: 'Safe Dismissal & Pick-Up', path: '/kindergarten/dashboard?tab=dismissal', icon: <VerifiedUserIcon /> },
+  { title: 'Class Sections & Roster', path: '/kindergarten/dashboard?tab=sections', icon: <PeopleIcon /> },
+  { title: 'Staff & Caregiver Allocation', path: '/kindergarten/dashboard?tab=staff', icon: <BadgeIcon /> },
   { title: 'My Resignation', path: '/staff/resignation', icon: <AssignmentTurnedInIcon /> },
 ];
 
@@ -860,7 +865,12 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle, drawe
       return null;
     }
 
-    const isActive = item.path ? location.pathname.startsWith(item.path) : false;
+    const currentUrl = location.pathname + location.search;
+    const isActive = item.path 
+      ? (item.path.includes('?') 
+          ? currentUrl === item.path 
+          : (location.pathname === item.path || (item.path !== '/' && !location.search && location.pathname.startsWith(item.path))))
+      : false;
     const isOpen = openSubMenus[item.title];
 
     return (
@@ -943,6 +953,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle, drawe
     'OFFICE_ADMIN':      officeMenuItems,
     'ADMISSION_STAFF':   officeMenuItems,
     'KINDERGARTEN_TEACHER': kindergartenMenuItems,
+    'KINDERGARTEN_STAFF':   kindergartenMenuItems,
     'WATCHMAN':          watchmanMenuItems,
     'SECURITY_GUARD':    watchmanMenuItems,
     'SECURITY_HEAD':     watchmanMenuItems,
@@ -974,6 +985,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle, drawe
     'OFFICE_ADMIN':      'Office',
     'ADMISSION_STAFF':   'Admissions',
     'KINDERGARTEN_TEACHER': 'Kindergarten',
+    'KINDERGARTEN_STAFF':   'Kindergarten',
     'WATCHMAN':          'Watchman / Gate Duty',
     'SECURITY_GUARD':    'Security Guard',
     'SECURITY_HEAD':     'Security Head',
@@ -991,6 +1003,13 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, handleDrawerToggle, drawe
   ) {
     menuItems = studentMenuItems;
     activeRoleTitle = 'Student Portal';
+  } else if (
+    location.pathname.startsWith('/kindergarten') ||
+    primaryRole === 'KINDERGARTEN_TEACHER' ||
+    primaryRole === 'KINDERGARTEN_STAFF'
+  ) {
+    menuItems = kindergartenMenuItems;
+    activeRoleTitle = 'Kindergarten & Early Years';
   } else if (location.pathname.startsWith('/transport/tracking')) {
     if (isParent || primaryRole === 'PARENT') {
       menuItems = parentMenuItems;

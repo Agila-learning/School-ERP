@@ -22,10 +22,10 @@ export const useAuth = () => {
   }, []) || [];
 
   // Normalized role names (UPPER_CASE_WITH_UNDERSCORES)
-  const roleNames: string[] = user?.roles?.map((role: any) => normalizeRole(role?.name)) || [];
+  const roleNames: string[] = user?.roles?.map((role: any) => normalizeRole(role?.code || role?.name)) || [];
 
   // Original role names (as stored in DB)
-  const rawRoleNames: string[] = user?.roles?.map((role: any) => role?.name) || [];
+  const rawRoleNames: string[] = user?.roles?.map((role: any) => role?.name || role?.code) || [];
 
   // ─── Permission Check ───
   const hasPermission = (requiredPermission: string): boolean => {
@@ -43,6 +43,7 @@ export const useAuth = () => {
   // ─── Primary Role (highest-priority role for sidebar/dashboard selection) ───
   const ROLE_PRIORITY = [
     'SUPER_ADMIN', 'SCHOOL_ADMIN', 'ADMIN', 'PRINCIPAL', 'VICE_PRINCIPAL',
+    'KINDERGARTEN_TEACHER', 'KINDERGARTEN_STAFF',
     'TEACHER', 'CLASS_TEACHER', 'CLASS_COORDINATOR',
     'PARENT', 'STUDENT',
     'DRIVER', 'TRANSPORT_MANAGER',
@@ -78,6 +79,7 @@ export const useAuth = () => {
   const isHrAdmin = hasRole('HR_ADMIN') || hasRole('HR');
   const isHostelWarden = hasRole('HOSTEL_WARDEN');
   const isOfficeStaff = hasRole('OFFICE_ADMIN') || hasRole('ADMISSION_STAFF');
+  const isKindergartenStaff = hasRole('KINDERGARTEN_TEACHER') || hasRole('KINDERGARTEN_STAFF');
 
   // ─── Teacher Responsibilities ───
   const responsibilities = user?.responsibilities || [];
@@ -127,6 +129,7 @@ export const useAuth = () => {
     isHrAdmin,
     isHostelWarden,
     isOfficeStaff,
+    isKindergartenStaff,
     // Responsibilities
     responsibilities,
     coordinatedClasses,
