@@ -927,7 +927,7 @@ export const KindergartenDashboard: React.FC = () => {
                           </Button>
                         </TableCell>
                       </TableRow>
-                    )))}
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -1008,7 +1008,7 @@ export const KindergartenDashboard: React.FC = () => {
                       </Box>
                     </Card>
                   </Grid>
-                )))}
+                ))}
               </Grid>
             </Box>
           )}
@@ -1177,7 +1177,7 @@ export const KindergartenDashboard: React.FC = () => {
                           </Button>
                         </TableCell>
                       </TableRow>
-                    )))}
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>
