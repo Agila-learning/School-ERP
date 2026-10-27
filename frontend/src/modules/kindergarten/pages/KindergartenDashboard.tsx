@@ -838,6 +838,7 @@ export const KindergartenDashboard: React.FC = () => {
                   <Typography variant="caption" color="text.secondary">
                     Monitors toddler food intake, dietary allergy restrictions, and afternoon rest quality.
                   </Typography>
+                </Box>
                 <Button
                   size="small"
                   variant="contained"
@@ -927,7 +928,7 @@ export const KindergartenDashboard: React.FC = () => {
                           </Button>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -1008,7 +1009,7 @@ export const KindergartenDashboard: React.FC = () => {
                       </Box>
                     </Card>
                   </Grid>
-                ))}
+                )))}
               </Grid>
             </Box>
           )}
@@ -1177,7 +1178,7 @@ export const KindergartenDashboard: React.FC = () => {
                           </Button>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )))}
                   </TableBody>
                 </Table>
               </TableContainer>
