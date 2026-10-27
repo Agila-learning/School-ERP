@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Modern CSS Reset & Global Layout Styles */
+:root {
+  --font-sans: 'Inter', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  background-color: #0F172A; /* Match SaaS dark background fallback to prevent white edge gutters */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Remove ugly focus outlines for mouse users, preserve for keyboard */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Base link styling */
+a {
+  text-decoration: none;
+  color: inherit;
+}

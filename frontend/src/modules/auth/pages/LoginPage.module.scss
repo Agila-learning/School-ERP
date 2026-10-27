@@ -1,0 +1,43 @@
+.loginContainer {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f9;
+
+  .loginCard {
+    width: 100%;
+    max-width: 450px;
+    padding: 2rem;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    background-color: #ffffff;
+  }
+
+  .logo {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1976d2;
+    font-weight: 700;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .forgotPassword {
+    text-align: right;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+    a {
+      color: #1976d2;
+      text-decoration: none;
+      font-size: 0.875rem;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

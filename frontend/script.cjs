@@ -1,0 +1,1 @@
+const fs = require('fs'); const app = fs.readFileSync('C:/Users/agila/OneDrive/Documents/School-ERP_FIC/frontend/src/App.tsx', 'utf8'); const matches = [...app.matchAll(/<Route[^\n]*path="([^"]+)"/g)].map(m => m[1]); console.log(JSON.stringify([...new Set(matches)], null, 2));
