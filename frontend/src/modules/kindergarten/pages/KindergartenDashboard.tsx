@@ -109,7 +109,47 @@ interface KGSection {
   theme: string;
 }
 
-const INITIAL_KG_SECTIONS: KGSection[] = [];
+const DEMO_KG_SECTIONS: KGSection[] = [
+  {
+    id: 'SEC-KG-01',
+    grade: 'Pre-KG',
+    name: 'Little Stars (Pre-KG A)',
+    room: 'Toddler Care Suite 101',
+    ageGroup: '2.5 - 3.5 yrs',
+    enrolled: 12,
+    capacity: 15,
+    leadTeacher: 'Mrs. Devaki Raman (ECCE)',
+    assistantTeacher: 'Ms. Keerthana R',
+    caregiverAyah: 'Amudha Amma (Lead Ayah)',
+    theme: 'Sensory Sand & Water Play, Finger Painting'
+  },
+  {
+    id: 'SEC-KG-02',
+    grade: 'LKG',
+    name: 'Sunshine Explorers (LKG B)',
+    room: 'Activity Hall 102',
+    ageGroup: '3.5 - 4.5 yrs',
+    enrolled: 16,
+    capacity: 18,
+    leadTeacher: 'Ms. Keerthana R',
+    assistantTeacher: 'Ms. Sneha V',
+    caregiverAyah: 'Lakshmi Amma',
+    theme: 'Phonics Rhymes, Shapes & Color Sorting'
+  },
+  {
+    id: 'SEC-KG-03',
+    grade: 'UKG',
+    name: 'Butterflies (UKG A)',
+    room: 'Discovery Classroom 104',
+    ageGroup: '4.5 - 5.5 yrs',
+    enrolled: 18,
+    capacity: 20,
+    leadTeacher: 'Mrs. Radhika Iyer',
+    assistantTeacher: 'Ms. Meena K',
+    caregiverAyah: 'Parvathi Amma',
+    theme: 'Early Literacy, Sight Words & Nature Safari'
+  }
+];
 
 // Sample Toddlers for Daily Trackers
 interface ToddlerTracker {
@@ -133,7 +173,68 @@ interface ToddlerTracker {
   teacherNote: string;
 }
 
-const INITIAL_TODDLERS: ToddlerTracker[] = [];
+const DEMO_TODDLERS: ToddlerTracker[] = [
+  {
+    id: 'KG-2026-001',
+    name: 'Aarav Sharma',
+    section: 'Butterflies (UKG A)',
+    photoUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=200&auto=format&fit=crop&q=80',
+    morningSnack: 'Ate All',
+    lunch: 'Ate All',
+    afternoonSnack: 'Ate All',
+    napStatus: 'Sound Asleep',
+    napMinutes: 75,
+    mood: 'Very Happy',
+    sensoryActivity: 'Finger painting butterflies & playdough alphabet shapes',
+    toiletIndependence: 'Fully Independent',
+    pickupGuardian: 'Rajesh Sharma',
+    pickupRfid: 'RFID-KG-9841',
+    pickupRelation: 'Father (Verified Pickup Card)',
+    pickupStatus: 'Awaiting Pickup in Daycare',
+    allergyAlert: undefined,
+    teacherNote: 'Aarav enthusiastically sang the nursery rhyme and helped his classmates put away crayons neatly!'
+  },
+  {
+    id: 'KG-2026-002',
+    name: 'Ananya Nair',
+    section: 'Little Stars (Pre-KG A)',
+    photoUrl: 'https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?w=200&auto=format&fit=crop&q=80',
+    morningSnack: 'Ate Half',
+    lunch: 'Ate All',
+    afternoonSnack: 'Ate All',
+    napStatus: 'Sound Asleep',
+    napMinutes: 90,
+    mood: 'Playful',
+    sensoryActivity: 'Warm water basin splash & soft textured toy matching',
+    toiletIndependence: 'Assisted by Ayah',
+    pickupGuardian: 'Meera Nair',
+    pickupRfid: 'RFID-KG-3320',
+    pickupRelation: 'Mother (Primary Guardian)',
+    pickupStatus: 'Authorized Guardian Arrived',
+    allergyAlert: 'Mild Lactose Sensitivity',
+    teacherNote: 'Ananya enjoyed listening to puppet storytime and took a very peaceful afternoon nap.'
+  },
+  {
+    id: 'KG-2026-003',
+    name: 'Kabir Verma',
+    section: 'Sunshine Explorers (LKG B)',
+    photoUrl: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=200&auto=format&fit=crop&q=80',
+    morningSnack: 'Ate All',
+    lunch: 'Ate Half',
+    afternoonSnack: 'Picky / Skipped',
+    napStatus: 'Resting Quietly',
+    napMinutes: 50,
+    mood: 'A Bit Shy',
+    sensoryActivity: 'Wooden block castle building & color sorting beads',
+    toiletIndependence: 'Fully Independent',
+    pickupGuardian: 'Sunil Verma',
+    pickupRfid: 'RFID-KG-5512',
+    pickupRelation: 'Father (Verified Pickup Card)',
+    pickupStatus: 'Verified & Departed',
+    allergyAlert: undefined,
+    teacherNote: 'Built an impressive 10-block tower with peer cooperation. Great hand-eye coordination.'
+  }
+];
 
 export const KindergartenDashboard: React.FC = () => {
   // 1. Wing Selector (Kindergarten, Primary, Secondary, Higher Secondary)
@@ -142,12 +243,73 @@ export const KindergartenDashboard: React.FC = () => {
   // Tabs within Kindergarten
   const [activeTab, setActiveTab] = useState<number>(0);
 
-  // Sections State
-  const [sections, setSections] = useState<KGSection[]>(INITIAL_KG_SECTIONS);
+  // Sections State with localStorage
+  const [sections, setSections] = useState<KGSection[]>(() => {
+    try {
+      const saved = localStorage.getItem('school_erp_kg_sections');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return DEMO_KG_SECTIONS;
+  });
   const [selectedSectionFilter, setSelectedSectionFilter] = useState<string>('ALL');
 
-  // Toddler Trackers State
-  const [toddlers, setToddlers] = useState<ToddlerTracker[]>(INITIAL_TODDLERS);
+  // Toddler Trackers State with localStorage
+  const [toddlers, setToddlers] = useState<ToddlerTracker[]>(() => {
+    try {
+      const saved = localStorage.getItem('school_erp_kg_toddlers');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return DEMO_TODDLERS;
+  });
+
+  // Sync to localStorage
+  const updateSections = (newSections: KGSection[] | ((prev: KGSection[]) => KGSection[])) => {
+    setSections(prev => {
+      const res = typeof newSections === 'function' ? newSections(prev) : newSections;
+      localStorage.setItem('school_erp_kg_sections', JSON.stringify(res));
+      return res;
+    });
+  };
+
+  const updateToddlers = (newToddlers: ToddlerTracker[] | ((prev: ToddlerTracker[]) => ToddlerTracker[])) => {
+    setToddlers(prev => {
+      const res = typeof newToddlers === 'function' ? newToddlers(prev) : newToddlers;
+      localStorage.setItem('school_erp_kg_toddlers', JSON.stringify(res));
+      return res;
+    });
+  };
+
+  // Add Section Dialog
+  const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
+  const [newSectionForm, setNewSectionForm] = useState({
+    grade: 'Pre-KG' as 'Pre-KG' | 'LKG' | 'UKG',
+    name: '',
+    room: 'Toddler Room 105',
+    capacity: 15,
+    leadTeacher: 'Mrs. Devaki Raman (ECCE)',
+    assistantTeacher: 'Ms. Keerthana R',
+    caregiverAyah: 'Amudha Amma',
+    theme: 'Sensory Exploration & Music Rhymes'
+  });
+
+  // Add Toddler Care Log Dialog
+  const [isAddToddlerOpen, setIsAddToddlerOpen] = useState(false);
+  const [newToddlerForm, setNewToddlerForm] = useState({
+    id: `KG-2026-${String(toddlers.length + 1).padStart(3, '0')}`,
+    name: '',
+    section: 'Butterflies (UKG A)',
+    morningSnack: 'Ate All' as 'Ate All' | 'Ate Half' | 'Picky / Skipped',
+    lunch: 'Ate All' as 'Ate All' | 'Ate Half' | 'Picky / Skipped',
+    napStatus: 'Sound Asleep' as 'Sound Asleep' | 'Resting Quietly' | 'Restless' | 'Awake & Reading',
+    napMinutes: 60,
+    mood: 'Very Happy' as 'Very Happy' | 'Playful' | 'A Bit Shy' | 'Cried at Morning Drop',
+    sensoryActivity: 'Finger painting & clay modelling',
+    toiletIndependence: 'Fully Independent' as 'Fully Independent' | 'Assisted by Ayah' | 'Accident Handled Calmly',
+    pickupGuardian: '',
+    pickupRelation: 'Father',
+    pickupRfid: `RFID-KG-${Math.floor(1000 + Math.random() * 9000)}`,
+    teacherNote: 'Very active and happy participation in circle time today.'
+  });
 
   // Parent Slip Dialog
   const [selectedToddlerForSlip, setSelectedToddlerForSlip] = useState<ToddlerTracker | null>(null);
@@ -181,21 +343,105 @@ export const KindergartenDashboard: React.FC = () => {
   };
 
   const handleSaveAllocation = () => {
-    // If updating a kindergarten section
     if (allocationForm.wing === 'KINDERGARTEN') {
-      setSections(prev => prev.map(s => {
-        if (s.name.includes(allocationForm.sectionName) || s.grade === allocationForm.grade) {
-          return {
-            ...s,
+      updateSections(prev => {
+        const found = prev.some(s => s.name.includes(allocationForm.sectionName) || s.grade === allocationForm.grade);
+        if (found) {
+          return prev.map(s => {
+            if (s.name.includes(allocationForm.sectionName) || s.grade === allocationForm.grade) {
+              return {
+                ...s,
+                leadTeacher: allocationForm.leadTeacher,
+                assistantTeacher: allocationForm.assistantTeacher,
+                caregiverAyah: allocationForm.caregiverAyah
+              };
+            }
+            return s;
+          });
+        }
+        return [
+          ...prev,
+          {
+            id: `SEC-KG-${Date.now().toString().slice(-4)}`,
+            grade: (allocationForm.grade as any) || 'Pre-KG',
+            name: allocationForm.sectionName || `${allocationForm.grade} Section`,
+            room: 'Toddler Room',
+            ageGroup: allocationForm.grade === 'Pre-KG' ? '2.5 - 3.5 yrs' : allocationForm.grade === 'LKG' ? '3.5 - 4.5 yrs' : '4.5 - 5.5 yrs',
+            enrolled: 1,
+            capacity: 18,
             leadTeacher: allocationForm.leadTeacher,
             assistantTeacher: allocationForm.assistantTeacher,
-            caregiverAyah: allocationForm.caregiverAyah
-          };
-        }
-        return s;
-      }));
+            caregiverAyah: allocationForm.caregiverAyah,
+            theme: 'Early Childhood Development'
+          }
+        ];
+      });
     }
     setIsAllocationOpen(false);
+  };
+
+  const handleCreateSection = () => {
+    if (!newSectionForm.name) return;
+    const newSec: KGSection = {
+      id: `SEC-KG-${Date.now().toString().slice(-4)}`,
+      grade: newSectionForm.grade,
+      name: newSectionForm.name,
+      room: newSectionForm.room,
+      ageGroup: newSectionForm.grade === 'Pre-KG' ? '2.5 - 3.5 yrs' : newSectionForm.grade === 'LKG' ? '3.5 - 4.5 yrs' : '4.5 - 5.5 yrs',
+      enrolled: 0,
+      capacity: newSectionForm.capacity,
+      leadTeacher: newSectionForm.leadTeacher,
+      assistantTeacher: newSectionForm.assistantTeacher,
+      caregiverAyah: newSectionForm.caregiverAyah,
+      theme: newSectionForm.theme
+    };
+    updateSections(prev => [...prev, newSec]);
+    setIsAddSectionOpen(false);
+    setNewSectionForm({
+      grade: 'Pre-KG',
+      name: '',
+      room: 'Toddler Room 105',
+      capacity: 15,
+      leadTeacher: 'Mrs. Devaki Raman (ECCE)',
+      assistantTeacher: 'Ms. Keerthana R',
+      caregiverAyah: 'Amudha Amma',
+      theme: 'Sensory Exploration & Music Rhymes'
+    });
+  };
+
+  const handleCreateToddler = () => {
+    if (!newToddlerForm.name) return;
+    const newT: ToddlerTracker = {
+      id: newToddlerForm.id || `KG-2026-${String(toddlers.length + 1).padStart(3, '0')}`,
+      name: newToddlerForm.name,
+      section: newToddlerForm.section,
+      photoUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=200&auto=format&fit=crop&q=80',
+      morningSnack: newToddlerForm.morningSnack,
+      lunch: newToddlerForm.lunch,
+      afternoonSnack: 'Ate All',
+      napStatus: newToddlerForm.napStatus,
+      napMinutes: Number(newToddlerForm.napMinutes) || 60,
+      mood: newToddlerForm.mood,
+      sensoryActivity: newToddlerForm.sensoryActivity,
+      toiletIndependence: newToddlerForm.toiletIndependence,
+      pickupGuardian: newToddlerForm.pickupGuardian || 'Parent / Guardian',
+      pickupRfid: newToddlerForm.pickupRfid,
+      pickupRelation: newToddlerForm.pickupRelation,
+      pickupStatus: 'Awaiting Pickup in Daycare',
+      teacherNote: newToddlerForm.teacherNote
+    };
+    updateToddlers(prev => [newT, ...prev]);
+    setIsAddToddlerOpen(false);
+  };
+
+  const handleLoadDemoRoster = () => {
+    updateSections(DEMO_KG_SECTIONS);
+    updateToddlers(DEMO_TODDLERS);
+  };
+
+  const handleClearRoster = () => {
+    updateSections([]);
+    updateToddlers([]);
   };
 
   return (
@@ -267,18 +513,37 @@ export const KindergartenDashboard: React.FC = () => {
               </TextField>
             </Box>
 
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AssignmentIndIcon />}
-              onClick={() => {
-                setAllocationForm(prev => ({ ...prev, wing: selectedWing }));
-                setIsAllocationOpen(true);
-              }}
-              sx={{ height: 42, mt: 2.7, fontWeight: 700, borderRadius: 2 }}
-            >
-              Allocate Staff
-            </Button>
+            <Box sx={{ display: 'flex', gap: 1, mt: 2.7, flexWrap: 'wrap' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AssignmentIndIcon />}
+                onClick={() => {
+                  setAllocationForm(prev => ({ ...prev, wing: selectedWing }));
+                  setIsAllocationOpen(true);
+                }}
+                sx={{ height: 42, fontWeight: 700, borderRadius: 2 }}
+              >
+                Allocate Staff
+              </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                startIcon={<VolunteerActivismIcon />}
+                onClick={handleLoadDemoRoster}
+                sx={{ height: 42, fontWeight: 700, borderRadius: 2 }}
+              >
+                Load Demo Roster
+              </Button>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={handleClearRoster}
+                sx={{ height: 42, fontWeight: 600, borderRadius: 2, color: 'text.secondary' }}
+              >
+                Clear
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </Paper>
@@ -456,7 +721,7 @@ export const KindergartenDashboard: React.FC = () => {
                     Configured with designated lead educators, assistant teachers, and caregiver ayahs for optimal child-to-caregiver ratios.
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                   {['ALL', 'Pre-KG', 'LKG', 'UKG'].map(lvl => (
                     <Button
                       key={lvl}
@@ -468,6 +733,16 @@ export const KindergartenDashboard: React.FC = () => {
                       {lvl}
                     </Button>
                   ))}
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={() => setIsAddSectionOpen(true)}
+                    sx={{ fontWeight: 700, borderRadius: 2, ml: 1 }}
+                  >
+                    Add Section
+                  </Button>
                 </Box>
               </Box>
 
@@ -563,7 +838,16 @@ export const KindergartenDashboard: React.FC = () => {
                   <Typography variant="caption" color="text.secondary">
                     Monitors toddler food intake, dietary allergy restrictions, and afternoon rest quality.
                   </Typography>
-                </Box>
+                <Button
+                  size="small"
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddCircleOutlineIcon />}
+                  onClick={() => setIsAddToddlerOpen(true)}
+                  sx={{ fontWeight: 700, borderRadius: 2 }}
+                >
+                  Log Toddler Routine
+                </Button>
               </Box>
 
               <TableContainer component={Paper} sx={{ borderRadius: 2, border: '1px solid #e2e8f0' }}>
@@ -1114,6 +1398,245 @@ export const KindergartenDashboard: React.FC = () => {
             sx={{ fontWeight: 700, px: 3 }}
           >
             Confirm Staff Allocation
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Create Pre-Primary Section Dialog */}
+      <Dialog open={isAddSectionOpen} onClose={() => setIsAddSectionOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ fontWeight: 800 }}>
+          Create New Pre-Primary Section
+        </DialogTitle>
+        <DialogContent dividers>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                select
+                fullWidth
+                label="Target Level"
+                value={newSectionForm.grade}
+                onChange={(e) => setNewSectionForm({ ...newSectionForm, grade: e.target.value as any })}
+              >
+                <MenuItem value="Pre-KG">Pre-KG (Ages 2.5 - 3.5)</MenuItem>
+                <MenuItem value="LKG">LKG (Ages 3.5 - 4.5)</MenuItem>
+                <MenuItem value="UKG">UKG (Ages 4.5 - 5.5)</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Section Name"
+                placeholder="e.g. Little Stars (Pre-KG A)"
+                value={newSectionForm.name}
+                onChange={(e) => setNewSectionForm({ ...newSectionForm, name: e.target.value })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Classroom / Suite"
+                value={newSectionForm.room}
+                onChange={(e) => setNewSectionForm({ ...newSectionForm, room: e.target.value })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Class Capacity"
+                value={newSectionForm.capacity}
+                onChange={(e) => setNewSectionForm({ ...newSectionForm, capacity: Number(e.target.value) })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Montessori Lead Educator"
+                value={newSectionForm.leadTeacher}
+                onChange={(e) => setNewSectionForm({ ...newSectionForm, leadTeacher: e.target.value })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Assistant Teacher"
+                value={newSectionForm.assistantTeacher}
+                onChange={(e) => setNewSectionForm({ ...newSectionForm, assistantTeacher: e.target.value })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Caregiver / Ayah"
+                value={newSectionForm.caregiverAyah}
+                onChange={(e) => setNewSectionForm({ ...newSectionForm, caregiverAyah: e.target.value })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Early Learning Pedagogical Theme"
+                value={newSectionForm.theme}
+                onChange={(e) => setNewSectionForm({ ...newSectionForm, theme: e.target.value })}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setIsAddSectionOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleCreateSection} disabled={!newSectionForm.name} sx={{ fontWeight: 700 }}>
+            Create Section
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Log Toddler Care Dialog */}
+      <Dialog open={isAddToddlerOpen} onClose={() => setIsAddToddlerOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ fontWeight: 800 }}>
+          Log Daily Toddler Routine & Care
+        </DialogTitle>
+        <DialogContent dividers>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Toddler Full Name"
+                placeholder="e.g. Aarav Sharma"
+                value={newToddlerForm.name}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, name: e.target.value })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                select
+                fullWidth
+                label="Section"
+                value={newToddlerForm.section}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, section: e.target.value })}
+              >
+                {sections.length > 0 ? sections.map(s => (
+                  <MenuItem key={s.id} value={s.name}>{s.name}</MenuItem>
+                )) : (
+                  <MenuItem value="Butterflies (UKG A)">Butterflies (UKG A)</MenuItem>
+                )}
+              </TextField>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                select
+                fullWidth
+                label="Morning Snack"
+                value={newToddlerForm.morningSnack}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, morningSnack: e.target.value as any })}
+              >
+                <MenuItem value="Ate All">Ate All</MenuItem>
+                <MenuItem value="Ate Half">Ate Half</MenuItem>
+                <MenuItem value="Picky / Skipped">Picky / Skipped</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                select
+                fullWidth
+                label="Nutritious Lunch"
+                value={newToddlerForm.lunch}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, lunch: e.target.value as any })}
+              >
+                <MenuItem value="Ate All">Ate All</MenuItem>
+                <MenuItem value="Ate Half">Ate Half</MenuItem>
+                <MenuItem value="Picky / Skipped">Picky / Skipped</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                select
+                fullWidth
+                label="Afternoon Nap Rest"
+                value={newToddlerForm.napStatus}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, napStatus: e.target.value as any })}
+              >
+                <MenuItem value="Sound Asleep">Sound Asleep</MenuItem>
+                <MenuItem value="Resting Quietly">Resting Quietly</MenuItem>
+                <MenuItem value="Restless">Restless</MenuItem>
+                <MenuItem value="Awake & Reading">Awake & Reading</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Nap Duration (minutes)"
+                value={newToddlerForm.napMinutes}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, napMinutes: Number(e.target.value) })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                select
+                fullWidth
+                label="Toddler Mood Today"
+                value={newToddlerForm.mood}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, mood: e.target.value as any })}
+              >
+                <MenuItem value="Very Happy">Very Happy</MenuItem>
+                <MenuItem value="Playful">Playful</MenuItem>
+                <MenuItem value="A Bit Shy">A Bit Shy</MenuItem>
+                <MenuItem value="Cried at Morning Drop">Cried at Morning Drop</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                select
+                fullWidth
+                label="Toilet Independence"
+                value={newToddlerForm.toiletIndependence}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, toiletIndependence: e.target.value as any })}
+              >
+                <MenuItem value="Fully Independent">Fully Independent</MenuItem>
+                <MenuItem value="Assisted by Ayah">Assisted by Ayah</MenuItem>
+                <MenuItem value="Accident Handled Calmly">Accident Handled Calmly</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Sensory Play Activity"
+                value={newToddlerForm.sensoryActivity}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, sensoryActivity: e.target.value })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Authorized Pick-up Person"
+                value={newToddlerForm.pickupGuardian}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, pickupGuardian: e.target.value })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Pickup Relationship"
+                value={newToddlerForm.pickupRelation}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, pickupRelation: e.target.value })}
+              />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                multiline
+                rows={2}
+                label="Teacher Anecdotal Note to Parent"
+                value={newToddlerForm.teacherNote}
+                onChange={(e) => setNewToddlerForm({ ...newToddlerForm, teacherNote: e.target.value })}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setIsAddToddlerOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleCreateToddler} disabled={!newToddlerForm.name} sx={{ fontWeight: 700 }}>
+            Save Care Log
           </Button>
         </DialogActions>
       </Dialog>

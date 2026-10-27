@@ -95,6 +95,10 @@ export const login = async (req: TenantRequest, res: Response, next: NextFunctio
         'NURSE':             '/health/dashboard',
         'MEDICAL_STAFF':     '/health/dashboard',
         'MEDICAL STAFF':     '/health/dashboard',
+        'KINDERGARTEN_TEACHER': '/kindergarten/dashboard',
+        'KINDERGARTEN TEACHER': '/kindergarten/dashboard',
+        'KINDERGARTEN_STAFF':   '/kindergarten/dashboard',
+        'KINDERGARTEN STAFF':   '/kindergarten/dashboard',
       };
 
       // Priority list — check roles in order (highest first)
@@ -102,6 +106,7 @@ export const login = async (req: TenantRequest, res: Response, next: NextFunctio
         'SUPER_ADMIN', 'SUPER ADMIN',
         'SCHOOL_ADMIN', 'SCHOOL ADMIN', 'ADMIN',
         'PRINCIPAL', 'VICE_PRINCIPAL', 'VICE PRINCIPAL',
+        'KINDERGARTEN_TEACHER', 'KINDERGARTEN TEACHER', 'KINDERGARTEN_STAFF', 'KINDERGARTEN STAFF',
         'TEACHER', 'CLASS_TEACHER', 'CLASS TEACHER', 'CLASS_COORDINATOR', 'CLASS COORDINATOR',
         'PARENT', 'STUDENT',
         'DRIVER', 'TRANSPORT_MANAGER', 'TRANSPORT MANAGER',

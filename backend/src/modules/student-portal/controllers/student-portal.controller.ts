@@ -142,14 +142,14 @@ async function resolveStudent(req: StudentRequest) {
   if (studentIdQuery) {
     student = await StudentProfile.findOne({
       _id: studentIdQuery,
-      status: 'ACTIVE'
+      isDeleted: { $ne: true }
     });
   }
 
   if (!student && userId) {
     student = await StudentProfile.findOne({
       userId,
-      status: 'ACTIVE'
+      isDeleted: { $ne: true }
     });
   }
 
@@ -157,12 +157,12 @@ async function resolveStudent(req: StudentRequest) {
     // Find first active student in tenant or DB
     student = await StudentProfile.findOne({
       tenantId: req.tenantId,
-      status: 'ACTIVE'
+      isDeleted: { $ne: true }
     });
   }
 
   if (!student) {
-    student = await StudentProfile.findOne({ status: 'ACTIVE' });
+    student = await StudentProfile.findOne({ isDeleted: { $ne: true } });
   }
 
   // Linked parent info
@@ -258,28 +258,32 @@ async function resolveStudent(req: StudentRequest) {
     console.error('Error computing dynamic student attendance:', attErr);
   }
 
+  const isKgStudent = (student?.category === 'KINDERGARTEN') || 
+    /^(KG|LKG|UKG|NURSERY|PRE-KG|KINDERGARTEN|PLAYGROUP)/i.test((student as any)?.class || (student as any)?.currentClass || '');
+
   const studentData = student ? {
     _id: student._id,
     studentId: student.studentIdNumber || 'STU-2026-000006',
     firstName: student.firstName || 'Advik',
     lastName: student.lastName || 'A',
     admissionNumber: student.studentIdNumber || 'ADM2026-006',
-    class: '10',
-    section: 'A',
-    rollNumber: '06',
+    class: (student as any).currentClass || (student as any).class || (isKgStudent ? 'UKG' : '10'),
+    category: student.category || (isKgStudent ? 'KINDERGARTEN' : 'GENERAL'),
+    section: (student as any).section || 'A',
+    rollNumber: (student as any).rollNumber || '06',
     gender: student.gender || 'Male',
     dateOfBirth: student.dateOfBirth ? new Date(student.dateOfBirth).toISOString() : '2010-06-09T00:00:00Z',
     bloodGroup: student.bloodGroup || 'O+ Positive',
     nationality: student.nationality || 'Indian',
     academicYear: '2026-2027',
-    photoUrl: student.photoUrl || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&auto=format&fit=crop&q=80',
+    photoUrl: student.photoUrl || (isKgStudent ? 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=200&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&auto=format&fit=crop&q=80'),
     attendance: dynamicAttendance,
-    rank: '#3 in Section 10-A',
-    gpa: '9.8 / 10.0',
-    isHostelResident: true,
-    residenceType: 'HOSTEL',
-    hostelWing: (student?.gender === 'Female') ? 'Ganga Girls Residency • Malabar Wing' : 'Kaveri Boys Residency • Block A',
-    hostelRoom: (student?.gender === 'Female') ? 'Room 108 • Bed A' : 'Room 204 • Bed B'
+    rank: isKgStudent ? '🌟 Playgroup Star' : '#3 in Section 10-A',
+    gpa: isKgStudent ? 'Early Years Holistic' : '9.8 / 10.0',
+    isHostelResident: !isKgStudent,
+    residenceType: isKgStudent ? 'DAY_SCHOLAR' : 'HOSTEL',
+    hostelWing: isKgStudent ? '🧸 Early Childhood Daycare Wing' : ((student?.gender === 'Female') ? 'Ganga Girls Residency • Malabar Wing' : 'Kaveri Boys Residency • Block A'),
+    hostelRoom: isKgStudent ? 'Toddler Activity Room 01' : ((student?.gender === 'Female') ? 'Room 108 • Bed A' : 'Room 204 • Bed B')
   } : {
     _id: 'mock-001',
     studentId: 'STU-2026-000006',
